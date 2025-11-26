@@ -41,16 +41,15 @@ We'll start with a must-have Hello World!
 
 import time
 
-import logicsponge.core as ls
+import logicsponge as ls
 
 
 # Define the Hello term
 class Hello(ls.SourceTerm):
-    def run(self):
-        incomplete_message = "Hello"
-        out = ls.DataItem({"message": incomplete_message})
-        self.output(out)
-        time.sleep(1)
+    def generate(self):
+        while True:
+            yield ls.DataItem({"message": "Hello"})
+            time.sleep(1)
 
 
 # Define the World term
@@ -82,21 +81,15 @@ A closer look into `Hello` and `World` will already make you familiar with two m
 
 ### Source term ```Hello```
 
-`Hello` overwrites the `run` method of its superclass `SourceTerm`, which can be used for terms
-that do not expect any inputs:
+`Hello` yields items from its `generate` method, which can be used for terms that do not expect any inputs:
 ```python
 class Hello(ls.SourceTerm):
-    def run(self):
+    def generate(self):
         [...]
 ``` 
-It is equipped with an implicit while loop, i.e.,
-its body is executed over and over again (under the hood, it is in the scope of `while True`). This is ideal for
-source terms, but can also prove useful when several input streams need to be orchestrated in complex ways. We will come
-back to the endless possibilities in later tutorials. So, `Hello` simply creates an infinite stream of
+It can loop forever and yield `DataItem` objects directly. This is ideal for source terms, but can also prove useful when several input streams need to be orchestrated in complex ways. We will come back to the endless possibilities in later tutorials. So, `Hello` simply creates an infinite stream of
 **data items**. A data item is more or less a standard Python dictionary, though, internally, it is equipped with
-additional information such as a timestamp. Note that, as it possibly runs forever, ```run``` does not have a return
-statement. However, using ```self.output```, you can add data items to the output stream at your discretion,
-allowing them to be processed by subsequent terms.
+additional information such as a timestamp.
 
 ### Function term ```World```
 
